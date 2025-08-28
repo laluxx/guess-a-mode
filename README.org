@@ -1,0 +1,19 @@
+#+TITLE: Guess-a-mode
+#+AUTHOR: Laluxx
+
+Guess what it does
+
+#+begin_src shell
+mkdir ~/.config/emacs/lisp
+cd ~/.config/emacs/lisp
+git clone https://github.com/lalux/guess-a-mode
+#+end_src>
+
+#+begin_src emacs-lisp
+
+(use-package guess-a-mode
+  :load-path "~/.config/emacs/lisp/guess-a-mode")
+
+#+end_src>
+
+I'm welcome to add more languages
