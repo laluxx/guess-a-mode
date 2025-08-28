@@ -115,18 +115,19 @@
      :keywords ()
      :score-threshold 1)
     
+    ;; Emacs Lisp should come before general Lisp for better specificity
+    (emacs-lisp-mode
+     :patterns ("^[[:space:]]*(" "defun[[:space:]]+" "defvar[[:space:]]+" "defcustom[[:space:]]+" "defgroup[[:space:]]+" "provide[[:space:]]+" "require[[:space:]]+")
+     :keywords ("defun" "defvar" "defcustom" "defgroup" "require" "provide" "interactive" "setq" "let")
+     :score-threshold 3)
+    
     (lisp-mode
      :patterns ("^[[:space:]]*(" "defun[[:space:]]+" "defvar[[:space:]]+" "setq[[:space:]]+")
-     :keywords ("defun" "defvar" "setq" "let" "lambda")
-     :score-threshold 2)
-    
-    (emacs-lisp-mode
-     :patterns ("^[[:space:]]*(" "defun[[:space:]]+" "defvar[[:space:]]+" "defcustom[[:space:]]+")
-     :keywords ("defun" "defvar" "defcustom" "defgroup" "require" "provide")
+     :keywords ("defun" "defvar" "setq" "let" "lambda" "cond" "progn")
      :score-threshold 2)
     
     (c-mode
-     :patterns ("^[[:space:]]*#include[[:space:]]*<" "^[[:space:]]*int[[:space:]]+main" "\\*[a-zA-Z_][a-zA-Z0-9_]*;" "[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\\(")
+     :patterns ("^[[:space:]]*#include[[:space:]]*<" "^[[:space:]]*int[[:space:]]+main" "\\*[a-zA-Z_][a-zA-Z0-9_]*;" "[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*[(]")
      :keywords ("int" "char" "float" "double" "void" "struct" "typedef" "malloc" "printf" "return")
      :score-threshold 2)
     
@@ -150,16 +151,6 @@
      :keywords ("public" "private" "protected" "class" "interface" "import" "package" "static" "final" "void")
      :score-threshold 2)
     
-    (kotlin-mode
-     :patterns ("fun[[:space:]]+[a-zA-Z_]" "class[[:space:]]+[a-zA-Z_]" "val[[:space:]]+[a-zA-Z_]" "var[[:space:]]+[a-zA-Z_]")
-     :keywords ("fun" "val" "var" "class" "object" "interface" "data" "sealed" "when" "is")
-     :score-threshold 2)
-    
-    (swift-mode
-     :patterns ("func[[:space:]]+[a-zA-Z_]" "class[[:space:]]+[a-zA-Z_]" "let[[:space:]]+[a-zA-Z_]" "var[[:space:]]+[a-zA-Z_]" "import[[:space:]]+[a-zA-Z_]+")
-     :keywords ("func" "let" "var" "class" "struct" "enum" "protocol" "import" "override" "init")
-     :score-threshold 2)
-    
     (php-mode
      :patterns ("^[[:space:]]*<\\?php" "\\$[a-zA-Z_][a-zA-Z0-9_]*" "function[[:space:]]+[a-zA-Z_]" "class[[:space:]]+[a-zA-Z_]")
      :keywords ("function" "class" "public" "private" "protected" "echo" "print" "array" "foreach" "endif")
@@ -170,39 +161,31 @@
      :keywords ("def" "class" "module" "end" "if" "unless" "puts" "require" "attr_accessor" "initialize")
      :score-threshold 2)
     
-    (scala-mode
-     :patterns ("def[[:space:]]+[a-zA-Z_]" "class[[:space:]]+[a-zA-Z_]" "object[[:space:]]+[a-zA-Z_]" "val[[:space:]]+[a-zA-Z_]" "var[[:space:]]+[a-zA-Z_]")
-     :keywords ("def" "val" "var" "class" "object" "trait" "case" "match" "import" "package")
-     :score-threshold 2)
-    
+    ;; More specific Haskell patterns to avoid false positives
     (haskell-mode
-     :patterns ("[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*::" "module[[:space:]]+[A-Z][a-zA-Z0-9_.]*" "import[[:space:]]+[A-Z][a-zA-Z0-9_.]")
-     :keywords ("module" "import" "data" "type" "class" "instance" "where" "let" "in" "case")
-     :score-threshold 2)
-    
-    (erlang-mode
-     :patterns ("-module[[:space:]]*(" "-export[[:space:]]*(" "[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*(" "\\.")
-     :keywords ("module" "export" "import" "case" "of" "if" "when" "receive" "after" "end")
-     :score-threshold 2)
-    
-    (elixir-mode
-     :patterns ("defmodule[[:space:]]+[A-Z][a-zA-Z0-9_.]+" "def[[:space:]]+[a-zA-Z_]" "defp[[:space:]]+[a-zA-Z_]" "@[a-zA-Z_]")
-     :keywords ("defmodule" "def" "defp" "do" "end" "if" "unless" "case" "cond" "with")
-     :score-threshold 2)
-    
-    (clojure-mode
-     :patterns ("^[[:space:]]*(" "defn[[:space:]]+[a-zA-Z_-]" "def[[:space:]]+[a-zA-Z_-]" "ns[[:space:]]+[a-zA-Z_.-]+")
-     :keywords ("defn" "def" "let" "fn" "ns" "require" "import" "if" "when" "cond")
-     :score-threshold 2)
+     :patterns ("^[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*::[[:space:]]*[A-Z][a-zA-Z0-9_]*[[:space:]]*->" 
+                "^module[[:space:]]+[A-Z][a-zA-Z0-9_.]*[[:space:]]+where" 
+                "^import[[:space:]]+[A-Z][a-zA-Z0-9_.]*"
+                "data[[:space:]]+[A-Z][a-zA-Z0-9_]*[[:space:]]*="
+                "instance[[:space:]]+[A-Z][a-zA-Z0-9_]*")
+     :keywords ("module" "import" "data" "type" "class" "instance" "where" "case" "of")
+     :score-threshold 3)
+        
+    ;; More specific Elixir patterns to avoid false positives  
+    (elixir-ts-mode
+     :patterns ("defmodule[[:space:]]+[A-Z][a-zA-Z0-9_.]*[[:space:]]+do"
+                "\\bdef[[:space:]]+[a-zA-Z_][a-zA-Z0-9_?!]*[[:space:]]*[(]"
+                "\\bdefp[[:space:]]+[a-zA-Z_][a-zA-Z0-9_?!]*[[:space:]]*[(]" 
+                "@[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*[\"']"
+                "|>[[:space:]]*[a-zA-Z_]"
+                "use[[:space:]]+[A-Z][a-zA-Z0-9_.]*"
+                "alias[[:space:]]+[A-Z][a-zA-Z0-9_.]*")
+     :keywords ("defmodule" "defp" "use" "alias" "import" "GenServer" "Agent" "Task")
+     :score-threshold 4)
     
     (typescript-mode
      :patterns ("interface[[:space:]]+[a-zA-Z_]" "type[[:space:]]+[a-zA-Z_]" ":[[:space:]]*[a-zA-Z_]" "function[[:space:]]+[a-zA-Z_]")
      :keywords ("interface" "type" "function" "const" "let" "var" "class" "extends" "implements" "export")
-     :score-threshold 2)
-    
-    (dart-mode
-     :patterns ("class[[:space:]]+[a-zA-Z_]" "void[[:space:]]+main" "import[[:space:]]*'" "library[[:space:]]+[a-zA-Z_]")
-     :keywords ("class" "void" "main" "import" "library" "final" "const" "var" "String" "int")
      :score-threshold 2))
   "List of heuristics for mode detection.
 Each entry is a list of (MODE :patterns PATTERNS :keywords KEYWORDS :score-threshold THRESHOLD).")
@@ -217,8 +200,13 @@ Each entry is a list of (MODE :patterns PATTERNS :keywords KEYWORDS :score-thres
     (dolist (pattern patterns)
       (save-excursion
         (goto-char (point-min))
-        (when (re-search-forward pattern nil t)
-          (setq score (1+ score)))))
+        (condition-case err
+            (when (re-search-forward pattern nil t)
+              (setq score (1+ score)))
+          (invalid-regexp
+           (when guess-a-mode-verbose
+             (message "Invalid regexp pattern '%s' for mode %s: %s" 
+                     pattern (car mode-spec) (error-message-string err)))))))
     
     ;; Score based on keyword frequency
     (dolist (keyword keywords)
